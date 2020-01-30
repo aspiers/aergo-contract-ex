@@ -31,25 +31,25 @@ end
 
 function typecheck(...)
   local types = {...}
-  
-  local function check(x, f)
-    if (x and f == 'address') then
-      assert(type(x) == 'string', "address must be string type") 
+
+  local function check(got, expected)
+    if (got and expected == 'address') then
+      assert(type(got) == 'string', "address must be string type")
       -- check address length
-      assert(52 == #x, string.format("invalid address length: %s (%s)", x, #x))
+      assert(52 == #got, string.format("invalid address length: %s (%s)", got, #got))
       -- check character
-      local invalidChar = string.match(x, '[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]')
+      local invalidChar = string.match(got, '[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]')
       assert(nil == invalidChar,
-        string.format("invalid address format: %s contains invalid char %s", x, invalidChar or 'nil'))
-    elseif (x and f == 'bignum') then
+        string.format("invalid address format: %s contains invalid char %s", got, invalidChar or 'nil'))
+    elseif (got and expected == 'bignum') then
       -- check bignum
-      assert(bignum.isbignum(x), string.format("invalid format: %s != %s", type(x), f))
+      assert(bignum.isbignum(got), string.format("expected %s but got %s", expected, type(got)))
     else
       -- check default lua types
-      assert(type(x) == f, string.format("invalid format: %s != %s", type(x), f or 'nil'))
+      assert(type(got) == expected, string.format("expected %s but got %s", expected or 'nil', type(got)))
     end
   end
-  
+
   return function(f)
     local function returncheck(i, ...)
       -- Check types of return values.
